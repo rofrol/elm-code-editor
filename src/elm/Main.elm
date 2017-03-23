@@ -269,8 +269,8 @@ view model =
                                     List.map viewLine lines
                                 , div [ class "contentWidgets", attribute "data-mprt" "1", attribute "style" "position: absolute; top: 0px;" ]
                                     []
-                                , div [ class "cursors-layer cursor-line-style cursor-solid" ]
-                                    [ div [ attribute "aria-hidden" "true", class "cursor", attribute "column" "2", attribute "linenumber" "1", attribute "role" "presentation", attribute "style" "height: 19px; top: 0px; left: 8px; font-family: Consolas, \" Courier New \", monospace; font-weight: normal; font-size: 14px; line-height: 19px; display: block; visibility: hidden; width: 2px;" ]
+                                , div [ class "cursors-layer cursor-line-style cursor-blink" ]
+                                    [ div [ attribute "aria-hidden" "true", class "cursor", attribute "column" "2", attribute "linenumber" "1", attribute "role" "presentation", attribute "style" "height: 19px; top: 0px; left: 8px; font-family: Consolas, \" Courier New \", monospace; font-weight: normal; font-size: 14px; line-height: 19px; display: block; visibility: inherit; width: 2px;" ]
                                         []
                                     ]
                                 ]
