@@ -36,9 +36,25 @@ https://github.com/sbrink/vscode-elm/blob/master/package.json#L145
 
 ## Tokenizer
 
+###
+
 I too support being able to replace the tokenizer implementation. For example, since I was working on first-class features for a language that I wanted to implement, I had to create an AST and its associated lexer/parser (which was based on flex/bison by the way). It's a shame that I can't reuse the lexer for syntax highlighting as well. Returning the token/position and saving the lexer state doesn't seem that difficult.
 
 https://github.com/Microsoft/vscode/issues/1967#issuecomment-171171262
+
+###
+
+TypeScript and JavaScript tokenization are today implemented by using the TypeScript lexer API (the same that TypeScript uses to parse TS/JS code).
+
+I do not think the TypeScript team would want to enhance their lexer.
+
+You could implement a custom colorizer in Monarch from scratch (it is not that hard) and use that instead of the one we ship with. VS Code uses a TextMate grammar for TypeScript.
+
+Comparing the standalone editor TypeScript tokenization with VS Code TypeScript tokenization is comparing apples and oranges.
+
+We cannot use TM grammars in the standalone editor. The reason for that is documented in the README. To get standalone editor tokenization on-par (or similar) to VS Code, one would need to create a Monarch tokenizer for TypeScript, because we "cheat" and simply use the lexer that comes with the compiler today.
+
+https://github.com/Microsoft/monaco-editor/issues/316
 
 ## VSCode
 
@@ -51,3 +67,7 @@ https://code.visualstudio.com/blogs/2017/02/08/syntax-highlighting-optimizations
 width 7px
 
 height 19px
+
+## Cursor
+
+https://github.com/Microsoft/vscode/blob/master/src/vs/editor/browser/viewParts/viewCursors/viewCursors.css
