@@ -39,3 +39,15 @@ https://github.com/sbrink/vscode-elm/blob/master/package.json#L145
 I too support being able to replace the tokenizer implementation. For example, since I was working on first-class features for a language that I wanted to implement, I had to create an AST and its associated lexer/parser (which was based on flex/bison by the way). It's a shame that I can't reuse the lexer for syntax highlighting as well. Returning the token/position and saving the lexer state doesn't seem that difficult.
 
 https://github.com/Microsoft/vscode/issues/1967#issuecomment-171171262
+
+## VSCode
+
+Syntax Highlighting usually consists of two phases. Tokens are assigned to source code, and then they are targeted by a theme, assigned colors, and voilà, your source code is rendered with colors.
+
+https://code.visualstudio.com/blogs/2017/02/08/syntax-highlighting-optimizations
+
+## Character
+
+width 7px
+
+height 19px
