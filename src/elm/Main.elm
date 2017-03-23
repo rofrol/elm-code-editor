@@ -82,20 +82,161 @@ update msg model =
     (,)
 
 
+nbsp : String
+nbsp =
+    " "
+
+
+leadingSpacesToNbsps : String -> String -> String
+leadingSpacesToNbsps times accumulator =
+    if times == "" then
+        accumulator
+    else
+        case String.uncons times of
+            Just ( c, rest ) ->
+                let
+                    first =
+                        String.fromChar c
+                in
+                    if first == " " then
+                        leadingSpacesToNbsps rest (accumulator ++ nbsp)
+                    else
+                        accumulator ++ first ++ rest
+
+            Nothing ->
+                accumulator
+
+
+type alias Line =
+    { n : Int
+    , tokens : List Token
+    }
+
+
+type alias Token =
+    { content : String
+    , classes : List String
+    }
+
+
 view : Model -> Html Msg
 view model =
     let
         lines =
-            List.range 1 22
+            [ Line 1 [ Token "/* Game of Life" [ "mtk8" ] ]
+            , Line 2 [ Token " * Implemented in TypeScript" [ "mtk8" ] ]
+            , Line 3
+                [ Token " * To learn more about TypeScript, please visit " [ "mtk8" ]
+                , Token "http://www.typescriptlang.org/" [ "mtk8", "detected-link" ]
+                ]
+            , Line 4 [ Token " */" [ "mtk8" ] ]
+            , Line 5 [ Token nbsp [ "mtk1" ] ]
+            , Line 6
+                [ Token "module" [ "mtk6" ]
+                , Token " Conway {" [ "mtk1" ]
+                ]
+            , Line 7
+                [ Token nbsp [] ]
+            , Line 8
+                [ Token (leadingSpacesToNbsps "    " "") [ "mtk1" ]
+                , Token "export" [ "mtk6" ]
+                , Token nbsp [ "mtk1" ]
+                , Token " Cell {" [ "mtk1" ]
+                ]
+            , Line 9
+                [ Token (leadingSpacesToNbsps "        " "") [ "mtk1" ]
+                , Token "public" [ "mtk6" ]
+                , Token " row: " [ "mtk1" ]
+                , Token "number" [ "mtk6" ]
+                , Token ";" [ "mtk1" ]
+                ]
+            , Line 10
+                [ Token (leadingSpacesToNbsps "        " "") [ "mtk1" ]
+                , Token "public" [ "mtk6" ]
+                , Token " col: " [ "mtk1" ]
+                , Token "number" [ "mtk6" ]
+                , Token ";" [ "mtk1" ]
+                ]
+            , Line 11
+                [ Token (leadingSpacesToNbsps "        " "") [ "mtk1" ]
+                , Token "public" [ "mtk6" ]
+                , Token " live: " [ "mtk1" ]
+                , Token "boolean" [ "mtk6" ]
+                , Token ";" [ "mtk1" ]
+                ]
+            , Line 12
+                [ Token (leadingSpacesToNbsps "        " "") [ "mtk1" ]
+                ]
+            , Line 13
+                [ Token (leadingSpacesToNbsps "        " "") [ "mtk1" ]
+                , Token "constructor" [ "mtk6" ]
+                , Token "(row: " [ "mtk1" ]
+                , Token "number" [ "mtk6" ]
+                , Token ", col: " [ "mtk1" ]
+                , Token "number" [ "mtk6" ]
+                , Token ", live: " [ "mtk1" ]
+                , Token "boolean" [ "mtk6" ]
+                , Token ") {" [ "mtk1" ]
+                ]
+            , Line 14
+                [ Token (leadingSpacesToNbsps "            " "") [ "mtk1" ]
+                , Token "this" [ "mtk6" ]
+                , Token ".row = row;" [ "mtk1" ]
+                ]
+            , Line 15
+                [ Token (leadingSpacesToNbsps "            " "") [ "mtk1" ]
+                , Token "this" [ "mtk6" ]
+                , Token ".col = col;" [ "mtk1" ]
+                ]
+            , Line 16
+                [ Token (leadingSpacesToNbsps "            " "") [ "mtk1" ]
+                , Token "this" [ "mtk6" ]
+                , Token ".live = live" [ "mtk1" ]
+                ]
+            , Line 17
+                [ Token (leadingSpacesToNbsps "        }" "") [ "mtk1" ]
+                ]
+            , Line 18
+                [ Token (leadingSpacesToNbsps "    }" "") [ "mtk1" ]
+                ]
+            , Line 19
+                [ Token "}" [ "mtk1" ]
+                ]
+            ]
 
-        linenumber : Int -> Html msg
-        linenumber n =
+        lineHeight =
+            19
+
+        lineStyleList n =
+            [ "position" => "absolute", "top" => ((toString <| (n - 1) * lineHeight) ++ "px"), "width" => "100%", "height" => ((toString <| lineHeight) ++ "px") ]
+
+        lineNumbers : Int -> Html msg
+        lineNumbers n =
             div
                 [ attribute "linenumber" (toString n)
-                , style [ "position" => "absolute", "top" => ((toString <| (n - 1) * 19) ++ "px"), "width" => "100%", "height" => "19px" ]
+                , style <| lineStyleList n
                 ]
                 [ div [ class "line-numbers", attribute "style" "left:0px;width:38px;" ]
                     [ text (toString n) ]
+                ]
+
+        currentLine : Int -> Html msg
+        currentLine n =
+            div
+                [ attribute "linenumber" (toString n)
+                , style <| lineStyleList n
+                ]
+                []
+
+        viewToken token =
+            span [ class <| String.join " " token.classes ]
+                [ text token.content ]
+
+        viewLine : Line -> Html msg
+        viewLine line =
+            div [ class "view-line", attribute "linenumber" (toString line.n), style [ "top" => ((toString <| (line.n - 1) * lineHeight) ++ "px"), "height" => ((toString <| lineHeight) ++ "px") ] ]
+                [ span [] <|
+                    List.map viewToken line.tokens
                 ]
     in
         div [ class "editor-frame" ]
@@ -114,284 +255,18 @@ view model =
                             , div [ attribute "aria-hidden" "true", class "margin-view-zones", attribute "role" "presentation", attribute "style" "position: absolute;" ]
                                 []
                             , div [ attribute "aria-hidden" "true", class "margin-view-overlays", attribute "role" "presentation", attribute "style" "position: absolute; width: 48px; font-family: Consolas, \" Courier New \", monospace; font-weight: normal; font-size: 14px; line-height: 19px; height: 2756px;" ] <|
-                                List.map linenumber lines
+                                List.map (\line -> lineNumbers line.n) lines
                             ]
                         , div [ class "monaco-scrollable-element editor-scrollable vs", attribute "data-mprt" "5", attribute "role" "presentation", attribute "style" "position: absolute; overflow: hidden; left: 48px; width: 820px; height: 400px;" ]
                             [ div [ class "lines-content monaco-editor-background", attribute "data-transform" "translate3d(0px, 0px, 0px)", attribute "style" "position: absolute; overflow: hidden; width: 1e+06px; height: 1e+06px; transform: translate3d(0px, 0px, 0px); top: 0px; left: 0px;" ]
-                                [ div [ attribute "aria-hidden" "true", class "view-overlays", attribute "role" "presentation", attribute "style" "position: absolute; width: 820px; height: 0px;" ]
-                                    [ div [ attribute "linenumber" "1", attribute "style" "position:absolute;top:0px;width:100%;height:19px;" ]
-                                        [ div [ class "current-line", attribute "style" "width:820px; height:19px;" ]
-                                            []
-                                        ]
-                                    , div [ attribute "linenumber" "2", attribute "style" "position:absolute;top:19px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "3", attribute "style" "position:absolute;top:38px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "4", attribute "style" "position:absolute;top:57px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "5", attribute "style" "position:absolute;top:76px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "6", attribute "style" "position:absolute;top:95px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "7", attribute "style" "position:absolute;top:114px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "8", attribute "style" "position:absolute;top:133px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "9", attribute "style" "position:absolute;top:152px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "10", attribute "style" "position:absolute;top:171px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "11", attribute "style" "position:absolute;top:190px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "12", attribute "style" "position:absolute;top:209px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "13", attribute "style" "position:absolute;top:228px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "14", attribute "style" "position:absolute;top:247px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "15", attribute "style" "position:absolute;top:266px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "16", attribute "style" "position:absolute;top:285px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "17", attribute "style" "position:absolute;top:304px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "18", attribute "style" "position:absolute;top:323px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "19", attribute "style" "position:absolute;top:342px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "20", attribute "style" "position:absolute;top:361px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "21", attribute "style" "position:absolute;top:380px;width:100%;height:19px;" ]
-                                        []
-                                    , div [ attribute "linenumber" "22", attribute "style" "position:absolute;top:399px;width:100%;height:19px;" ]
-                                        []
-                                    ]
+                                [ div [ attribute "aria-hidden" "true", class "view-overlays", attribute "role" "presentation", attribute "style" "position: absolute; width: 820px; height: 0px;" ] <|
+                                    List.map (\line -> currentLine line.n) lines
                                 , div [ class "view-rulers" ]
                                     []
                                 , div [ attribute "aria-hidden" "true", class "view-zones", attribute "role" "presentation", attribute "style" "position: absolute;" ]
                                     []
-                                , div [ attribute "aria-hidden" "true", class "view-lines", attribute "data-mprt" "7", attribute "role" "presentation", attribute "style" "position: absolute; font-family: Consolas, \" Courier New \", monospace; font-weight: normal; font-size: 14px; line-height: 19px; width: 820px; height: 2756px;" ]
-                                    [ div [ class "view-line", attribute "linenumber" "1", attribute "style" "top:0px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk8" ]
-                                                [ text "/* Game of Life" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "2", attribute "style" "top:19px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk8" ]
-                                                [ text " * Implemented in TypeScript" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "3", attribute "style" "top:38px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk8" ]
-                                                [ text " * To learn more about TypeScript, please visit " ]
-                                            , span [ class "mtk8 detected-link" ]
-                                                [ text "http://www.typescriptlang.org/" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "4", attribute "style" "top:57px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk8" ]
-                                                [ text " */" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "5", attribute "style" "top:76px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text " " ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "6", attribute "style" "top:95px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk6" ]
-                                                [ text "module" ]
-                                            , span [ class "mtk1" ]
-                                                [ text " Conway {" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "7", attribute "style" "top:114px;height:19px;" ]
-                                        [ span []
-                                            [ span []
-                                                [ text " " ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "8", attribute "style" "top:133px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "    " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "export" ]
-                                            , span [ class "mtk1" ]
-                                                [ text " " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "class" ]
-                                            , span [ class "mtk1" ]
-                                                [ text " Cell {" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "9", attribute "style" "top:152px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "        " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "public" ]
-                                            , span [ class "mtk1" ]
-                                                [ text " row: " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "number" ]
-                                            , span [ class "mtk1" ]
-                                                [ text ";" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "10", attribute "style" "top:171px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "        " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "public" ]
-                                            , span [ class "mtk1" ]
-                                                [ text " col: " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "number" ]
-                                            , span [ class "mtk1" ]
-                                                [ text ";" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "11", attribute "style" "top:190px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "        " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "public" ]
-                                            , span [ class "mtk1" ]
-                                                [ text " live: " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "boolean" ]
-                                            , span [ class "mtk1" ]
-                                                [ text ";" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "12", attribute "style" "top:209px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "        " ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "13", attribute "style" "top:228px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "        " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "constructor" ]
-                                            , span [ class "mtk1" ]
-                                                [ text "(row: " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "number" ]
-                                            , span [ class "mtk1" ]
-                                                [ text ", col: " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "number" ]
-                                            , span [ class "mtk1" ]
-                                                [ text ", live: " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "boolean" ]
-                                            , span [ class "mtk1" ]
-                                                [ text ") {" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "14", attribute "style" "top:247px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "            " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "this" ]
-                                            , span [ class "mtk1" ]
-                                                [ text ".row = row;" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "15", attribute "style" "top:266px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "            " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "this" ]
-                                            , span [ class "mtk1" ]
-                                                [ text ".col = col;" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "16", attribute "style" "top:285px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "            " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "this" ]
-                                            , span [ class "mtk1" ]
-                                                [ text ".live = live" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "17", attribute "style" "top:304px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "        }" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "18", attribute "style" "top:323px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "    }" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "19", attribute "style" "top:342px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "    " ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "20", attribute "style" "top:361px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "    " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "export" ]
-                                            , span [ class "mtk1" ]
-                                                [ text " " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "class" ]
-                                            , span [ class "mtk1" ]
-                                                [ text " GameOfLife {" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "21", attribute "style" "top:380px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "        " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "private" ]
-                                            , span [ class "mtk1" ]
-                                                [ text " gridSize: " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "number" ]
-                                            , span [ class "mtk1" ]
-                                                [ text ";" ]
-                                            ]
-                                        ]
-                                    , div [ class "view-line", attribute "linenumber" "22", attribute "style" "top:399px;height:19px;" ]
-                                        [ span []
-                                            [ span [ class "mtk1" ]
-                                                [ text "        " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "private" ]
-                                            , span [ class "mtk1" ]
-                                                [ text " canvasSize: " ]
-                                            , span [ class "mtk6" ]
-                                                [ text "number" ]
-                                            , span [ class "mtk1" ]
-                                                [ text ";" ]
-                                            ]
-                                        ]
-                                    ]
+                                , div [ attribute "aria-hidden" "true", class "view-lines", attribute "data-mprt" "7", attribute "role" "presentation", attribute "style" "position: absolute; font-family: Consolas, \" Courier New \", monospace; font-weight: normal; font-size: 14px; line-height: 19px; width: 820px; height: 2756px;" ] <|
+                                    List.map viewLine lines
                                 , div [ class "contentWidgets", attribute "data-mprt" "1", attribute "style" "position: absolute; top: 0px;" ]
                                     []
                                 , div [ class "cursors-layer cursor-line-style cursor-solid" ]
