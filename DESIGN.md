@@ -71,6 +71,8 @@ https://github.com/Microsoft/monaco-editor
 
 Syntax Highlighting usually consists of two phases. Tokens are assigned to source code, and then they are targeted by a theme, assigned colors, and voilà, your source code is rendered with colors.
 
+Over time, we have phased out our hand-written tokenizers (the last one, for HTML, only a couple months ago). So, in VS Code today, all the files get tokenized with TextMate grammars. For the Monaco Editor, we've migrated to using Monarch (a descriptive tokenization engine similar at heart with TextMate grammars, but a bit more expressive and that can run in a browser) for most of the supported languages, and we've added a wrapper for manual tokenizers. All in all, that means supporting a new tokenization format would require changing 3 tokens providers (TextMate, Monarch and the manual wrapper) and not more than 10.
+
 https://code.visualstudio.com/blogs/2017/02/08/syntax-highlighting-optimizations
 
 ## Character
@@ -82,3 +84,9 @@ height 19px
 ## Cursor
 
 https://github.com/Microsoft/vscode/blob/master/src/vs/editor/browser/viewParts/viewCursors/viewCursors.css
+
+## Monarch
+
+So… does the "Monarch" syntax declaration work well? Actually, it works quite well. It's basically a declarative state machine syntax so it allows some pretty nice stuff that is either extremely difficult or just impossible to do with regex. For instance, string interpolation highlighting was fairly straight-forward and you can push and pop states on the syntax highlighting stack.
+
+https://owensd.io/2015/05/23/vs-code-swift-colorizer/
