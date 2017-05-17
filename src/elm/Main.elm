@@ -207,6 +207,9 @@ view model =
         lineHeight =
             19
 
+        editorHeight =
+            400
+
         lineStyleList n =
             [ "position" => "absolute", "top" => ((toString <| (n - 1) * lineHeight) ++ "px"), "width" => "100%", "height" => ((toString <| lineHeight) ++ "px") ]
 
@@ -289,17 +292,17 @@ view model =
                 ]
 
         decorationsOverviewRuler =
-            canvas [ class "decorationsOverviewRuler", attribute "data-transform" "translate3d(0px, 0px, 0px)", attribute "height" "400", attribute "style" "position: absolute; top: 0px; right: 0px; width: 14px; height: 400px; transform: translate3d(0px, 0px, 0px);", attribute "width" "14" ]
+            canvas [ class "decorationsOverviewRuler", attribute "data-transform" "translate3d(0px, 0px, 0px)", attribute "height" (toString editorHeight), style [ "position" => "absolute", "top" => "0px", "right" => "0px", "width" => "14px", "height" => (toString editorHeight ++ "px"), "transform" => "translate3d(0px, 0px, 0px)" ], attribute "width" "14" ]
                 []
 
         scrollbarVertical =
-            div [ class "invisible scrollbar vertical fade", attribute "style" "position: absolute; transform: translate3d(0px, 0px, 0px); width: 14px; height: 400px; right: 0px; top: 0px;" ]
+            div [ class "invisible scrollbar vertical fade", style [ "position" => "absolute", "transform" => "translate3d(0px, 0px, 0px)", "width" => "14px", "height" => (toString editorHeight ++ "px"), "right" => "0px", "top" => "0px" ] ]
                 [ div [ class "slider", attribute "style" "position: absolute; top: 0px; left: 0px; width: 14px; height: 58px; transform: translate3d(0px, 0px, 0px);" ]
                     []
                 ]
 
         editorScrollable =
-            div [ class "monaco-scrollable-element editor-scrollable vs", attribute "data-mprt" "5", attribute "role" "presentation", attribute "style" "position: absolute; overflow: hidden; left: 48px; width: 820px; height: 400px;" ]
+            div [ class "monaco-scrollable-element editor-scrollable vs", attribute "data-mprt" "5", attribute "role" "presentation", style [ "position" => "absolute", "overflow" => "hidden", "left" => "48px", "width" => "820px", "height" => (toString editorHeight ++ "px") ] ]
                 [ linesContent
                 , scrollbarHorizontal
                 , decorationsOverviewRuler
@@ -530,8 +533,8 @@ view model =
         div [ class "editor-frame" ]
             [ progress
             , div [ attribute "data-keybinding-context" "1", attribute "data-mode-id" "typescript", id "editor" ]
-                [ div [ class "monaco-editor vs", attribute "style" "width: 868px; height: 400px;" ]
-                    [ div [ class "overflow-guard", attribute "data-mprt" "3", attribute "style" "width: 868px; height: 400px;" ]
+                [ div [ class "monaco-editor vs", style [ "width" => "868px", "height" => (toString editorHeight ++ "px") ] ]
+                    [ div [ class "overflow-guard", attribute "data-mprt" "3", style [ "width" => "868px", "height" => (toString editorHeight ++ "px") ] ]
                         [ margin
                         , editorScrollable
                         , div [ attribute "style" "width: 868px;" ]
