@@ -54,6 +54,19 @@ Comparing the standalone editor TypeScript tokenization with VS Code TypeScript 
 
 We cannot use TM grammars in the standalone editor. The reason for that is documented in the README. To get standalone editor tokenization on-par (or similar) to VS Code, one would need to create a Monarch tokenizer for TypeScript, because we "cheat" and simply use the lexer that comes with the compiler today.
 
+Tokens Providers are expected to go from the top of the file, line-by-line, tokenize, and potentially save some state at the end of the line (e.g. in multiline comment, in multiline string, etc.). Both Monarch and manual tokens providers must abide by this limitation. The idea is that tokenization should be very fast and predictable in the sense that changing a line will result most of the time in only that line getting different tokens and sometimes in the lines below getting new tokens (the insertion of a /* for example), but never in the lines above getting different tokens.
+
+I think I understand what you want. You can implement that quite straight-forward by:
+
+1. register a model change listener
+2. use the TS API to create an AST over the model text
+3. walk the TS AST and collect certain ranges (such as type names, etc.)
+4. add decorations to the model based on those ranges.
+
+Preferably, you would execute steps 2 and 3 asynchronously, on a web worker (to not block/freeze the UI) and would check that the model did not change in the meantime via model.getVersionId() or by cancelling/debouncing your requests on subsequent edits, etc.
+
+There are 2 or 3 samples involving decorations in the editor playground.
+
 https://github.com/Microsoft/monaco-editor/issues/316
 
 ##  Why doesn't the editor support TextMate grammars?
