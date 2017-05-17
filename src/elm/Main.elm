@@ -253,7 +253,7 @@ view model =
                     []
                 , div [ attribute "aria-hidden" "true", class "margin-view-zones", attribute "role" "presentation", attribute "style" "position: absolute;" ]
                     []
-                , div [ attribute "aria-hidden" "true", class "margin-view-overlays", attribute "role" "presentation", attribute "style" "position: absolute; width: 48px; font-family: Consolas, \" Courier New \", monospace; font-weight: normal; font-size: 14px; line-height: 19px; height: 2756px;" ] <|
+                , div [ attribute "aria-hidden" "true", class "margin-view-overlays", attribute "role" "presentation", style [ "position" => "absolute", "width" => "48px", "font-family" => "Consolas, \" Courier New \", monospace", "font-weight" => "normal", "font-size" => "14px", "line-height" => (toString lineHeight ++ "px"), "height" => "2756px" ] ] <|
                     List.map (\line -> lineNumbers line.n) lines
                 ]
 
@@ -265,19 +265,26 @@ view model =
                     []
                 , div [ attribute "aria-hidden" "true", class "view-zones", attribute "role" "presentation", attribute "style" "position: absolute;" ]
                     []
-                , div [ attribute "aria-hidden" "true", class "view-lines", attribute "data-mprt" "7", attribute "role" "presentation", attribute "style" "position: absolute; font-family: Consolas, \" Courier New \", monospace; font-weight: normal; font-size: 14px; line-height: 19px; width: 820px; height: 2756px;" ] <|
+                , div
+                    [ attribute "aria-hidden" "true"
+                    , class "view-lines"
+                    , attribute "data-mprt" "7"
+                    , attribute "role" "presentation"
+                    , style [ "position" => "absolute", "font-family" => "Consolas, \" Courier New \", monospace", "font-weight" => "normal", "font-size" => "14px", "line-height" => (toString lineHeight ++ "px"), "width" => "820px", "height" => "2756px" ]
+                    ]
+                  <|
                     List.map viewLine lines
                 , div [ class "contentWidgets", attribute "data-mprt" "1", attribute "style" "position: absolute; top: 0px;" ]
                     []
                 , div [ class "cursors-layer cursor-line-style cursor-blink" ]
-                    [ div [ attribute "aria-hidden" "true", class "cursor", attribute "column" "2", attribute "linenumber" "1", attribute "role" "presentation", attribute "style" "height: 19px; top: 0px; left: 8px; font-family: Consolas, \" Courier New \", monospace; font-weight: normal; font-size: 14px; line-height: 19px; display: block; visibility: inherit; width: 2px;" ]
+                    [ div [ attribute "aria-hidden" "true", class "cursor", attribute "column" "2", attribute "linenumber" "1", attribute "role" "presentation", style [ "height" => (toString lineHeight ++ "px"), "top" => "0px", "left" => "8px", "font-family" => "Consolas, \" Courier New \", monospace", "font-weight" => "normal", "font-size" => "14px", "line-height" => (toString lineHeight ++ "px"), "display" => "block", "visibility" => "inherit", "width" => "2px" ] ]
                         []
                     ]
                 ]
 
         scrollbarHorizontal =
             div [ class "invisible scrollbar horizontal", attribute "style" "position: absolute; transform: translate3d(0px, 0px, 0px); width: 806px; height: 10px; left: 0px; bottom: 0px;" ]
-                [ div [ class "slider", attribute "style" "position: absolute; top: 0px; left: 0px; height: 10px; width: 806px; transform: translate3d(0px, 0px, 0px);" ]
+                [ div [ class "slider", style [ "position" => "absolute", "top" => "0px", "left" => "0px", "height" => "10px", "width" => "806px", "transform" => "translate3d(0px, 0px, 0px)" ] ]
                     []
                 ]
 
@@ -372,7 +379,7 @@ view model =
         modesContentHoverWidget =
             div [ class "monaco-editor-hover hidden", attribute "style" "position: absolute; max-width: 1366px; visibility: hidden;", attribute "tabindex" "0", attribute "widgetid" "editor.contrib.modesContentHoverWidget" ]
                 [ div [ class "monaco-scrollable-element ", attribute "role" "presentation", attribute "style" "position: relative; overflow: hidden;" ]
-                    [ div [ class "monaco-editor-hover-content", attribute "style" "overflow: hidden; font-size: 14px; line-height: 19px; max-height: 250px;" ]
+                    [ div [ class "monaco-editor-hover-content", style [ "overflow" => "hidden", "font-size" => "14px", "line-height" => (toString lineHeight ++ "px"), "max-height" => "250px" ] ]
                         []
                     , div [ class "invisible scrollbar horizontal", attribute "style" "position: absolute;" ]
                         [ div [ class "slider", attribute "style" "position: absolute; top: 0px; left: 0px; height: 10px;" ]
@@ -428,7 +435,7 @@ view model =
                 ]
 
         renameBox =
-            div [ class "monaco-editor rename-box", attribute "style" "height: 19px; position: absolute; max-width: 1366px; visibility: hidden;", attribute "widgetid" "__renameInputWidget" ]
+            div [ class "monaco-editor rename-box", style [ "height" => (toString lineHeight ++ "px"), "position" => "absolute", "max-width" => "1366px", "visibility" => "hidden" ], attribute "widgetid" "__renameInputWidget" ]
                 [ input [ attribute "aria-label" "Rename input. Type new name and press Enter to commit.", class "rename-input", attribute "style" "font-family: Consolas, \" Courier New \", monospace; font-weight: normal; font-size: 14px;", type_ "text" ]
                     []
                 ]
@@ -459,7 +466,7 @@ view model =
                             [ span [ class "monaco-highlighted-label" ]
                                 []
                             ]
-                        , span [ class "go-back", attribute "style" "height: 19px; width: 19px;", title "Go back" ]
+                        , span [ class "go-back", style [ "height" => (toString lineHeight ++ "px"), "width" => (toString lineHeight ++ "px") ], title "Go back" ]
                             []
                         ]
                     , div [ class "monaco-scrollable-element ", attribute "role" "presentation", attribute "style" "position: relative; overflow: hidden;" ]
@@ -563,7 +570,7 @@ view model =
                             , div [ class "lightbulb-glyph hidden", attribute "style" "width: 21px; height: 20px; position: absolute;", title "Show Fixes (Ctrl+.)", attribute "widgetid" "__lightBulbWidget" ]
                                 []
                             ]
-                        , textarea [ attribute "aria-autocomplete" "both", attribute "aria-haspopup" "false", attribute "aria-label" "Editor content", attribute "aria-multiline" "true", attribute "autocapitalize" "off", attribute "autocorrect" "off", class "inputarea", attribute "data-mprt" "6", attribute "role" "textbox", attribute "spellcheck" "false", attribute "style" "top: 0px; left: 0px; font-family: Consolas, \" Courier New \", monospace; font-weight: normal; font-size: 14px; line-height: 19px;", wrap "off" ]
+                        , textarea [ attribute "aria-autocomplete" "both", attribute "aria-haspopup" "false", attribute "aria-label" "Editor content", attribute "aria-multiline" "true", attribute "autocapitalize" "off", attribute "autocorrect" "off", class "inputarea", attribute "data-mprt" "6", attribute "role" "textbox", attribute "spellcheck" "false", style [ "top" => "0px", "left" => "0px", "font-family" => "Consolas, \" Courier New \", monospace", "font-weight" => "normal", "font-size" => "14px", "line-height" => (toString lineHeight ++ "px") ], wrap "off" ]
                             []
                         , div [ class "monaco-editor-background line-numbers textAreaCover", attribute "style" "position: absolute; width: 1px; height: 1px; top: 0px; left: 0px;" ]
                             []
