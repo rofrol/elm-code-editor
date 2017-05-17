@@ -309,6 +309,10 @@ view model =
                 , scrollbarVertical
                 ]
 
+        control ariaLabel class_ title_ =
+            div [ attribute "aria-checked" "false", attribute "aria-disabled" "true", attribute "aria-label" ariaLabel, class <| "custom-checkbox " ++ class_ ++ " unchecked", attribute "role" "checkbox", title title_ ]
+                []
+
         findPart =
             div [ class "find-part" ]
                 [ div [ class "monaco-findInput disabled", attribute "style" "width: 221px;" ]
@@ -319,12 +323,9 @@ view model =
                             ]
                         ]
                     , div [ class "controls" ]
-                        [ div [ attribute "aria-checked" "false", attribute "aria-disabled" "true", attribute "aria-label" "Match Case (Alt+C)", class "custom-checkbox monaco-case-sensitive unchecked", attribute "role" "checkbox", title "Match Case (Alt+C)" ]
-                            []
-                        , div [ attribute "aria-checked" "false", attribute "aria-disabled" "true", attribute "aria-label" "Match Whole Word (Alt+W)", class "custom-checkbox monaco-whole-word unchecked", attribute "role" "checkbox", title "Match Whole Word (Alt+W)" ]
-                            []
-                        , div [ attribute "aria-checked" "false", attribute "aria-disabled" "true", attribute "aria-label" "Use Regular Expression (Alt+R)", class "custom-checkbox monaco-regex unchecked", attribute "role" "checkbox", title "Use Regular Expression (Alt+R)" ]
-                            []
+                        [ control "Match Case (Alt+C)" "monaco-whole-word" "Match Case (Alt+C)"
+                        , control "Match Whole Word (Alt+W)" "monaco-case-sensitive" "Match Whole Word (Alt+W)"
+                        , control "Use Regular Expression (Alt+R)" "monaco-regex" "Use Regular Expression (Alt+R)"
                         ]
                     ]
                 , div [ class "matchesCount", attribute "style" "min-width: 69px;", title "" ]
